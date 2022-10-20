@@ -1,0 +1,54 @@
+﻿@model List<Product>
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="row botMargin">
+    @foreach (var item in Model)
+    {
+        <div class="col-sm-3">
+            <div class="card item">
+                <div class="imgBlock">
+                    <img class="cardImg" src="@item.Image">
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 zeroPad">Артикул:</div><div class="col-sm-6 text-right zeroPad"><small>@item.Id</small></div>
+                    <div class="col-sm-5 zeroPad">Категория:</div><div class="col-sm-7 text-right zeroPad"><small>@item.Category</small></div>
+                    <div class="col-sm-6 zeroPad">Бренд:</div><div class="col-sm-6 text-right zeroPad"><small>@item.Brand</small></div>
+                    <div class="col-sm-6 zeroPad">Страна:</div><div class="col-sm-6 text-right zeroPad"><small>@item.Country</small></div>
+                    <div class="col-sm-6 zeroPad">Модель:</div><div class="col-sm-6 text-right zeroPad"><small>@item.Model</small></div>
+                    <div class="col-sm-6 zeroPad">Цена:</div><div class="col-sm-6 text-right zeroPad"><small>@item.Price руб.</small></div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<style>
+/*    .card{
+        padding: 10px;
+    }*/
+    p{
+        margin-bottom: 2px;
+    }
+    .item{
+        height: 450px;
+        padding: 30px;
+        margin: 10px;
+    }
+    .imgBlock{
+        height: 60%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    .cardImg{
+        max-height: 100%;
+        max-width: 100%;
+    }
+    .zeroPad{
+        padding: 0px;
+    }
+    .botMargin{
+        margin-bottom: 50px;
+    }
+</style>
