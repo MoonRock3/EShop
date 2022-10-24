@@ -3,6 +3,85 @@
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @using static TimirzinEShop.Controllers.HomeController;
-<h1>
-     
-</h1>
+@{Product product = products.FirstOrDefault(x => x.Id == Model);}
+<div>
+    <div class="productBlock row shadow">
+        <div class="col-sm-5 centerImg">
+            <img class="cardImg" src="@product.Image">
+        </div>
+        <div class="col-sm-7 rightHalf">
+            <div class="text-right">
+                <h3 class="productName">@product.Category @product.Brand @product.Model</h3>
+                <div>
+                    <h3 class="productPrice">@product.Price руб</h3>
+                    <button class="btn-dark text-uppercase shadow">Купить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="productBlock shadow">
+        <h3 class="blockHeader">Описание</h3>
+        <p>
+            @product.Description
+        </p>
+    </div>
+    <div class="productBlock shadow endBlock">
+        <h3 class="blockHeader">Характеристики</h3>
+        <div class="row marginZero">
+            <div class="col-sm-6 zeroPad">Артикул:</div><div class="col-sm-6 zeroPad">@product.Id</div>
+            <div class="col-sm-6 zeroPad">Категория:</div><div class="col-sm-6 zeroPad">@product.Category</div>
+            <div class="col-sm-6 zeroPad">Бренд:</div><div class="col-sm-6 zeroPad">@product.Brand</div>
+            <div class="col-sm-6 zeroPad">Модель:</div><div class="col-sm-6 zeroPad">@product.Model</div>
+            <div class="col-sm-6 zeroPad">Страна:</div><div class="col-sm-6 zeroPad">@product.Country</div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .blockHeader{
+        padding-bottom: 10px;
+    }
+    .marginZero{
+        margin: 0px;
+    }
+    .zeroPad{
+        border-bottom: solid 1px rgb(230,230,230);
+        padding: 0px;
+        margin-bottom: 5px;
+    }
+    .productBlock{
+        border-radius: 10px;
+        padding: 20px;
+        width: 100%;
+        margin: 0px 0px 20px 0px;
+    }
+    .cardImg{
+        height: 500px;
+    }
+    .centerImg{
+        display: flex;
+        justify-content: center;
+    }
+    .rightHalf{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .btn-dark{
+        height: 50px;
+        width: 100px;
+    }
+    .productName{
+        margin-bottom: 30px;
+    }
+    .productPrice{
+        margin-bottom: 15px;
+    }
+    .endBlock{
+        margin-bottom: 60px;
+    }
+    p{
+        margin: 0px;
+    }
+</style>

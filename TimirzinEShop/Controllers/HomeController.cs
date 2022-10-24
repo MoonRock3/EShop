@@ -141,9 +141,9 @@ namespace TimirzinEShop.Controllers
         {
             _logger = logger;
         }
-        public IActionResult ProductView(int productId)
+        public IActionResult ProductView(int id)
         {
-            return View(productId);
+            return View(id);
         }
         public IActionResult Index()
         {
