@@ -6,7 +6,7 @@
     @foreach (var item in Model)
     {
         <div class="col-sm-3">
-            <div class="card item">
+            <div class="card item" id="@item.Id">
                 <div class="imgBlock">
                     <img class="cardImg" src="@item.Image">
                 </div>
@@ -52,3 +52,15 @@
         margin-bottom: 50px;
     }
 </style>
+<script>
+    var cards = document.querySelectorAll(".item");
+    cards.forEach(x => {
+        x.addEventListener(
+            "click", () => {
+                window.location.href = "/Home/ProductView?id=" + x.id;
+            }
+        );
+        x.style.cursor = "pointer";
+    }
+    )
+</script>
