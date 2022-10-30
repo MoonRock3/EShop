@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace TimirzinEShop.Models
 {
-    public class Product
+    public class OldProduct
     {
-        public Product()
+        public OldProduct()
         {
 
         }
-        public Product(int id, string brand, string description, int price, string image, string country, string category, string model)
+        public OldProduct(int id, string brand, string description, int price, string image, string country, string category, string model)
         {
             Id = id;
             Brand = brand ?? throw new ArgumentNullException(nameof(brand));
