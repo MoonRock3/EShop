@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -7,27 +8,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using TimirzinEShop.DB_Context;
 using TimirzinEShop.Models;
+using Rep = TimirzinEShop.Models.ProductRepository;
 
 namespace TimirzinEShop.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        readonly ProductRepository _repository;
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _repository = new ProductRepository();
         }
-        public IActionResult ProductView(int id)
+        public IActionResult DetailedProduct(int id)
         {
-            DetailedProduct product = _repository.GetById(id) ?? new DetailedProduct();
+            DetailedProduct product = Rep.GetDetailedById(id) ?? new DetailedProduct();
             return View(product);
         }
         public IActionResult Index()
         {
-            var products = new List<ProductView>(_repository.GetAll());
+            var products = new List<ProductView>(Rep.GetAll());
 
             return View(products);
         }

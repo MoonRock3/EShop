@@ -23,5 +23,6 @@ namespace TimirzinEShop.DB_Context
 
         public virtual Category Category { get; set; }
         public virtual ICollection<ProductAttribute> ProductAttributes { get; set; }
+
     }
 }

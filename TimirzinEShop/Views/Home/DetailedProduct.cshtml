@@ -1,8 +1,5 @@
 ﻿@using TimirzinEShop.DB_Context
 @model DetailedProduct
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
 <div>
     <div class="productBlock row shadow">
         <div class="col-sm-5 centerImg">
@@ -13,7 +10,7 @@
                 <h3 class="productName">@Model.ProductView.CategoryName @Model.ProductView.Brand @Model.ProductView.Model</h3>
                 <div>
                     <h3 class="productPrice">@Model.ProductView.Price руб</h3>
-                    <button class="btn-dark text-uppercase shadow">Купить</button>
+                    <button class="btn-dark text-uppercase shadow" id="buyBtn">Купить</button>
                 </div>
             </div>
         </div>
@@ -27,7 +24,7 @@
     <div class="productBlock shadow endBlock">
         <h3 class="blockHeader">Характеристики</h3>
         <div class="row marginZero">
-            <div class="col-sm-6 zeroPad">Артикул:</div><div class="col-sm-6 zeroPad">@Model.ProductView.Id</div>
+            <div class="col-sm-6 zeroPad article" id="@Model.ProductView.Id">Артикул:</div><div class="col-sm-6 zeroPad">@Model.ProductView.Id</div>
             <div class="col-sm-6 zeroPad">Категория:</div><div class="col-sm-6 zeroPad">@Model.ProductView.CategoryName</div>
             <div class="col-sm-6 zeroPad">Бренд:</div><div class="col-sm-6 zeroPad">@Model.ProductView.Brand</div>
             <div class="col-sm-6 zeroPad">Модель:</div><div class="col-sm-6 zeroPad">@Model.ProductView.Model</div>
@@ -91,3 +88,15 @@
         margin: 0px;
     }
 </style>
+<script>
+    var article = document.querySelector(".article");
+    var buyBtn = document.querySelector("#buyBtn");
+    buyBtn.style.cursor = "pointer";
+    buyBtn.addEventListener(
+        "click", () => {
+            buyBtn.style.cursor = "not-allowed";
+            buyBtn.disabled = true;
+            buyBtn.innerHTML = "В корзине";
+            window.location.href = "/Cart/Add?id=" + article.id;
+    });
+</script>

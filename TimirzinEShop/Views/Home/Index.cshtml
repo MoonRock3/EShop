@@ -18,32 +18,37 @@
                     <div class="col-sm-6 zeroPad">Страна:</div><div class="col-sm-6 text-right zeroPad"><small>@item.Country</small></div>
                     <div class="col-sm-6 zeroPad">Модель:</div><div class="col-sm-6 text-right zeroPad"><small>@item.Model</small></div>
                     <div class="col-sm-6 zeroPad">Цена:</div><div class="col-sm-6 text-right zeroPad"><small>@item.Price руб.</small></div>
+                    <div class="col-sm-12 buyBlock">
+                        <button class="btn-dark shadow buy" data-id="@item.Id">КУПИТЬ</button>
+                    </div>
                 </div>
             </div>
         </div>
     }
 </div>
 <style>
-/*    .card{
-        padding: 10px;
-    }*/
     p{
         margin-bottom: 2px;
     }
+    .buyBlock{
+        padding: 12px;
+        display: flex;
+        justify-content: center;
+    }
     .item{
-        height: 450px;
+        height: 430px;
         padding: 30px;
         margin: 10px;
     }
     .imgBlock{
-        height: 224px;
+        height: 200px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 20px;
     }
     .cardImg{
-        max-height: 100%;
+        max-height: 175px;
         max-width: 100%;
     }
     .zeroPad{
@@ -57,11 +62,17 @@
     var cards = document.querySelectorAll(".item");
     cards.forEach(x => {
         x.addEventListener(
-            "click", () => {
-                window.location.href = "/Home/ProductView?id=" + x.id;
+            "click", e => {
+                if (e.target.classList.contains("buy"))
+                {
+                    window.location.href = "/Cart/Add?id=" + e.target.dataset.id;
+                }
+                else
+                {
+                    window.location.href = "/Home/DetailedProduct?id=" + x.id;
+                }
             }
         );
         x.style.cursor = "pointer";
-    }
-    )
+    });
 </script>

@@ -19,7 +19,7 @@ namespace TimirzinEShop.Models
                 var view = list[0];
                 ProductView = new ProductView
                 {
-                    Id = view.Id,
+                    Id = view.ProductArticle,
                     Brand = view.ProductBrand,
                     Price = view.ProductPrice,
                     CategoryName = view.CategoryName,

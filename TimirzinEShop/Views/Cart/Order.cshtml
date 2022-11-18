@@ -1,0 +1,82 @@
+﻿@model Cart
+<form class="shadow" method="post">
+	<h2>Оформление заказа</h2>
+	<h6>Количество товаров: @Model.GetTotalNumber()</h6>
+	<h6>Общая стоимость: @Model.GetTotalCost() руб</h6>
+	<div class="row">
+		<div class="col-sm-4 inputBlock">
+			<label for="secondName">Фамилия:</label>
+			<input name="secondName" type="text" placeholder="Иванов" required>
+		</div>
+		<div class="col-sm-4 inputBlock">
+			<label for="firstName">Имя:</label>
+			<input name="firstName" type="text" placeholder="Иван" required>
+		</div class="col-sm-4">
+		<div class="col-sm-4 inputBlock">
+			<label for="middleName">Отчество:</label>
+			<input name="middleName" type="text" placeholder="Иванович">
+		</div>
+
+		<div class="col-sm-12 inputBlock">
+			<label for="address">Адрес:</label>
+			<input name="address" type="text" placeholder="Страна, регион, населенный пункт, дом, квартира" required>
+		</div>
+
+		<div class="col-sm-4 inputBlock">
+			<label for="phone">Телефон:</label>
+			<input name="phone" type="text" placeholder="+71234567890" pattern="\+[0-9]{11,13}" maxlength="14" required>
+		</div>
+		<div class="col-sm-4 inputBlock">
+			<label for="email">Электронная почта:</label>
+			<input name="email" type="email" placeholder="abc@def.ru">
+		</div>
+		<div class="col-sm-4 inputBlock">
+			<label for="paymentMethod">Способ оплаты:</label>
+			<select name="paymentMethod">
+				<option name="card">Банковская карта</option>
+				<option name="cash">Наличные</option>
+			</select>
+		</div>
+		<div class="btnBlock">
+			<button type="submit" id="submit" class="btn-dark">Оформить заказ</button>
+			<button type="reset" class="btn-dark">Сброс</button>
+		</div>
+	</div>
+</form>
+<style>
+	#submit{
+		margin-bottom: 20px;
+	}
+	form{
+		border-radius: 10px;
+		padding: 30px;
+		margin-top: 100px;
+	}
+	button{
+		padding: 10px;
+	}
+	label{
+		display: block;
+	}
+	input, select{
+		width: 100%;
+		border: solid 1px rgb(200,200,200);
+		border-radius: 10px;
+		padding: 10px;
+	}
+	h6{
+		color: rgb(150,150,150);
+		font-size: 14px;
+		margin: 2px;
+	}
+	.btnBlock{
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		margin-top: 40px;
+	}
+	.inputBlock{
+		padding: 15px;
+	}
+</style>

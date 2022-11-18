@@ -1,0 +1,131 @@
+﻿@using TimirzinEShop.DB_Context
+@model Cart
+<div class="row total">
+    <div class="col-sm-4 text-center">
+        <h3>Общая стоимость:</h3>
+        <h3>@Model.GetTotalCost() руб</h3>
+    </div>
+    <div class="col-sm-4 text-center">
+        <h3>Общее количество товаров:</h3>
+        <h3>@Model.GetTotalNumber()</h3>
+    </div>
+    <div class="col-sm-4 center">
+        <button class="btn-dark shadow orderMaker">ПЕРЕЙТИ К ОФОРМЛЕНИЮ</button>
+    </div>
+</div>
+<div class="row botMargin">
+    @foreach (var item in Model.Products)
+    {
+        ProductView view = item.Product;
+        <div class="col-sm-3">
+            <div class="card item" id="@view.Id">
+                <div class="imgBlock">
+                    <img class="cardImg" src="@view.Image">
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 zeroPad">Артикул:</div><div class="col-sm-6 text-right zeroPad"><small>@view.Id</small></div>
+                    <div class="col-sm-5 zeroPad">Категория:</div><div class="col-sm-7 text-right zeroPad"><small>@view.CategoryName</small></div>
+                    <div class="col-sm-6 zeroPad">Бренд:</div><div class="col-sm-6 text-right zeroPad"><small>@view.Brand</small></div>
+                    <div class="col-sm-6 zeroPad">Модель:</div><div class="col-sm-6 text-right zeroPad"><small>@view.Model</small></div>
+                    <div class="col-sm-6 zeroPad">Цена:</div><div class="col-sm-6 text-right zeroPad"><small>@view.Price руб.</small></div>
+                    <div class="col-sm-6 zeroPad">Количество:</div>
+                    <div class="zeroPad col-sm-6">
+                        <input type="number" class="number zeroPad" value="@item.Number" data-id="@view.Id" min="1" max="99">
+                    </div>
+                    <div class="col-sm-6 zeroPad">Сум. стоим.:</div><div class="col-sm-6 text-right zeroPad"><small>@item.GetCost() руб</small></div>
+                    <div class="col-sm-12 deleteBlock">
+                        <button class="btn-dark shadow delete" data-id="@view.Id">Удалить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<style>
+    p {
+        margin-bottom: 2px;
+    }
+    .orderMaker{
+        padding: 10px;
+    }
+    .center{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .total{
+        padding: 10px;
+        margin: 10px;
+        border: solid 1px rgb(200,200,200);
+        border-radius: 10px;
+    }
+    .deleteBlock{
+        padding: 12px;
+        display: flex;
+        justify-content: center;
+    }
+    .number{
+        width: 100%;
+        text-align: right;
+        border: none;
+    }
+    .item {
+        height: 450px;
+        padding: 30px;
+        margin: 10px;
+    }
+    .imgBlock {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    .cardImg {
+        max-height: 175px;
+        max-width: 100%;
+    }
+    .zeroPad {
+        padding: 0px;
+    }
+    .botMargin {
+        margin-bottom: 50px;
+    }
+</style>
+<script>
+    var numbers = document.querySelectorAll(".number");
+    numbers.forEach(x => {
+        x.addEventListener(
+            "change", e => {
+                x.value = Math.floor(x.value);
+                if (x.value < 1) {
+                    x.value = 1;
+                } else if (x.value > 99) {
+                    x.value = 99;
+                }
+                window.location.href = "/Cart/SetNumber?id=" + x.dataset.id + "&&" + "number=" + x.value;
+        });
+        x.addEventListener("keydown", e => {
+            if (e.keyCode == 69) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    var toDeletes = document.querySelectorAll(".delete");
+    toDeletes.forEach(x => {
+        x.addEventListener("click", () => {
+            window.location.href = "/Cart/Delete?id=" + x.dataset.id;
+        })
+    });
+    var order = document.querySelector(".orderMaker");
+    if (@((Model.GetTotalNumber() < 1).CompareTo(false))) {
+        order.disabled = true;
+        order.style.cursor = "not-allowed";
+    }
+    else {
+        order.addEventListener("click", e => {
+            window.location.href = "@Url.Action("Order", "Cart")"
+        });
+    }
+</script>
