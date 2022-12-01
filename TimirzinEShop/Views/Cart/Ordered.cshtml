@@ -1,0 +1,117 @@
+﻿@using TimirzinEShop.Models
+@using TimirzinEShop.DB_Context
+@model OrderParams
+@{
+    Cart cart = Model.Cart;
+    ClientInfo info = Model.ClientInfo;
+}
+<h2>Заказ оформлен</h2>
+<h6>Количество товаров: @cart.GetTotalNumber()</h6>
+<h6>Общая стоимость: @cart.GetTotalCost() руб</h6>
+<div class="info">
+    <h3>Данные покупателя:</h3>
+    <div class="row">
+        <div class="col-sm-4 inputBlock">
+            <label>
+                <b>Фамилия:</b>
+            </label>
+            <span>@info.SecondName</span>
+        </div>
+        <div class="col-sm-4 inputBlock">
+            <label>
+                <b>Имя:</b>
+            </label>
+            <span>@info.FirstName</span>
+        </div>
+        <div class="col-sm-4 inputBlock">
+            <label>
+                <b>Отчество:</b>
+            </label>
+            <span>@info.MiddleName</span>
+        </div>
+
+        <div class="col-sm-12 inputBlock">
+            <label>
+                <b>Адрес:</b>
+            </label>
+            <span>@info.Address</span>
+        </div>
+
+        <div class="col-sm-4 inputBlock">
+            <label>
+                <b>Телефон:</b>
+            </label>
+            <span>@info.Phone</span>
+        </div>
+        <div class="col-sm-4 inputBlock">
+            <label>
+                <b>Электронная почта:</b>
+            </label>
+            <span>@info.Email</span>
+        </div>
+        <div class="col-sm-4 inputBlock">
+            <label>
+                <b>Способ оплаты:</b>
+            </label>
+            <span>@info.PaymentMethod</span>
+        </div>
+    </div>
+    <h3>Список товаров:</h3>
+    <div class="row botMargin">
+        @foreach (var item in cart.Products)
+        {
+            ProductView view = item.Product;
+            <div class="col-sm-3">
+                <div class="card item" id="@view.Id">
+                    <div class="imgBlock">
+                        <img class="cardImg" src="@view.Image">
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 zeroPad">Артикул:</div><div class="col-sm-6 text-right zeroPad"><small>@view.Id</small></div>
+                        <div class="col-sm-5 zeroPad">Категория:</div><div class="col-sm-7 text-right zeroPad"><small>@view.CategoryName</small></div>
+                        <div class="col-sm-6 zeroPad">Бренд:</div><div class="col-sm-6 text-right zeroPad"><small>@view.Brand</small></div>
+                        <div class="col-sm-6 zeroPad">Модель:</div><div class="col-sm-6 text-right zeroPad"><small>@view.Model</small></div>
+                        <div class="col-sm-6 zeroPad">Цена:</div><div class="col-sm-6 text-right zeroPad"><small>@view.Price руб.</small></div>
+                        <div class="col-sm-6 zeroPad">Количество:</div><div class="col-sm-6 text-right zeroPad"><small>@item.Number</small></div>
+                        <div class="col-sm-6 zeroPad">Сум. стоим.:</div><div class="col-sm-6 text-right zeroPad"><small>@item.GetCost() руб</small></div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<style>
+    label {
+        display: block;
+    }
+    .inputBlock {
+        padding: 0px 15px 15px 15px;
+    }
+
+    .botMargin {
+        margin-bottom: 50px;
+    }
+
+    .zeroPad {
+        padding: 0px;
+    }
+
+    .item {
+        height: 420px;
+        padding: 30px;
+        margin: 10px;
+    }
+
+    .imgBlock {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .cardImg {
+        max-height: 175px;
+        max-width: 100%;
+    }
+</style>

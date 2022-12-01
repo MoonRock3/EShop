@@ -11,6 +11,13 @@ namespace TimirzinEShop.Models
     public class Cart
     {
         public List<CartItem> Products { get; set; } = new List<CartItem>();
+        public Cart()
+        {
+        }
+        public Cart(Cart original)
+        {
+            Products = new List<CartItem>(original.Products);
+        }
         public void AddProduct(ProductView productV)
         {
             if (Products.Any(x => x.Product.Equals(productV)))
@@ -54,12 +61,5 @@ namespace TimirzinEShop.Models
                 toReturn += item.GetCost();
             return toReturn;
         }
-        //private bool CartContains(Product product)
-        //{
-        //    foreach (CartItem item in Products)
-        //        if (item.Equals(product))
-        //            return true;
-        //    return false;
-        //}
     }
 }

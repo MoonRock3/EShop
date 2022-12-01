@@ -10,6 +10,30 @@ namespace TimirzinEShop.Controllers
 {
     public class CartController : Controller
     {
+        [HttpGet]
+        public void ClearCart()
+        {
+            Cart cart = HttpContext.Session.Get<Cart>("Cart") ?? new Cart();
+            cart.Products.Clear();
+        }
+        [HttpPost]
+        public IActionResult Ordered(ClientInfo clientInfo)
+        {
+            Cart cart = HttpContext.Session.Get<Cart>("Cart") ?? new Cart();
+            var orderParams = new OrderParams(cart, clientInfo);
+            HttpContext.Session.Set<Cart>("Cart", new Cart());
+            return View(orderParams);
+        }
+        [HttpGet]
+        public int GetCartNumber()
+        {
+            Cart cart = HttpContext.Session.Get<Cart>("Cart") ?? new Cart();
+            return cart.GetTotalNumber();
+        }
+        public IActionResult Index()
+        {
+            return RedirectToAction("Index","Home");
+        }
         public IActionResult Order()
         {
             Cart cart = HttpContext.Session.Get<Cart>("Cart") ?? new Cart();

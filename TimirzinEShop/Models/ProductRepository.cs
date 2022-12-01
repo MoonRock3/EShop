@@ -61,5 +61,39 @@ namespace TimirzinEShop.Models
             }
             return toReturn ?? new ProductView();
         }
+        public static List<HtmlOption> GetCommonFilterValuesList(FilterType type)
+        {
+            List<HtmlOption> htmlOptions = new List<HtmlOption>();
+            try
+            {
+                using (Timirzin_AS51Context context = new Timirzin_AS51Context())
+                {
+                    List<string> propValsList = type switch
+                    {
+                        FilterType.Brand => context.ProductViews.Select(x => x.Brand).ToList(),
+                        FilterType.CategoryName => context.ProductViews.Select(x => x.CategoryName).ToList(),
+                        FilterType.Country => context.ProductViews.Select(x => x.Country).ToList(),
+                        _ => new List<string>(),
+                    };
+                    propValsList = propValsList.Distinct().ToList();
+                    for (int i = 0; i < propValsList.Count; i++)
+                    {
+                        string item = propValsList[i];
+                        htmlOptions.Add(
+                            new HtmlOption
+                            {
+                                Text = item,
+                                Value = $"value{i}"
+                            }
+                        );
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return htmlOptions;
+        }
     }
 }

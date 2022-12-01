@@ -15,6 +15,11 @@ namespace TimirzinEShop.DB_Context
         public string Image { get; set; }
         public string Country { get; set; }
         public string Model { get; set; }
+        
+        public string GetProductName()
+        {
+            return $"{Brand} {Model}";
+        }
 
         public override bool Equals(object obj)
         {

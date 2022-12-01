@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
+    @*<meta charset="windows-1251" />*@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TimirzinEShop</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -24,7 +25,12 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Главная страница</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Cart" asp-action="Show">Корзина</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Cart" asp-action="Show">
+                                Корзина
+                                <div id="cartNumber">
+
+                                </div>
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -48,3 +54,30 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+<style>
+    #cartNumber{
+        display: inline-block;
+    }
+</style>
+<script>
+    var cartBtn = document.querySelector("#cartNumber");
+    fetch("@Url.Action("GetCartNumber", "Cart")")
+        .then(result => result.json())
+        .then(json =>
+        {
+            if (json > 0)
+            {
+                if (json > 99)
+                {
+                    json = "99+";
+                }
+                cartBtn.innerText = json;
+                cartBtn.style.backgroundColor = "black";
+                cartBtn.style.borderRadius = "10px";
+                cartBtn.style.padding = "0px 5px";
+                cartBtn.style.fontSize = "13px";
+                cartBtn.style.color = "white";
+            }
+        })
+        .catch(error => console.log(error));
+</script>

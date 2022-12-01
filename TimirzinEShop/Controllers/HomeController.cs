@@ -20,16 +20,39 @@ namespace TimirzinEShop.Controllers
         {
             _logger = logger;
         }
+        [HttpPost]
+        public JsonResult GetCommonFilterValuesList(FilterType type)
+        {
+            List<HtmlOption> options = null;
+            switch (type)
+            {
+                case FilterType.Brand:
+                case FilterType.CategoryName:
+                case FilterType.Country:
+                    options = Rep.GetCommonFilterValuesList(type);
+                    break;
+            }
+            return Json(options ?? new List<HtmlOption>());
+        }
         public IActionResult DetailedProduct(int id)
         {
             DetailedProduct product = Rep.GetDetailedById(id) ?? new DetailedProduct();
-            return View(product);
+            if (string.IsNullOrWhiteSpace(product.ProductView.Brand))
+            {
+                return View("NotFound");
+            }
+            else
+            {
+                return View(product);
+            }
         }
-        public IActionResult Index()
+        public IActionResult Index(DisplayOptions displayOptions)
         {
-            var products = new List<ProductView>(Rep.GetAll());
-
-            return View(products);
+            var productViews = Rep.GetAll();
+            DisplayOptionsApplier applier = new DisplayOptionsApplier(displayOptions);
+            applier.ApplyToList(ref productViews);
+            IndexParams @params = new IndexParams(productViews, displayOptions);
+            return View(@params);
         }
 
         public IActionResult Privacy()

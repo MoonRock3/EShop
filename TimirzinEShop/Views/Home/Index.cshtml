@@ -1,10 +1,50 @@
 ﻿@using TimirzinEShop.DB_Context
-@model List<ProductView>
+@using TimirzinEShop.Models
+@model IndexParams
 @{
     ViewData["Title"] = "Home Page";
 }
+<form action="@Url.Action("Index", "Home")" method="post" id="displayForm">
+    <div class="displayBlock">
+        <label for="displaySorted" class="displayLbl">
+            Сортировка:
+        </label>
+        <select name="sortBy" id="displaySorted">
+            <option value="None">Нет</option>
+            <option value="Price">Цена</option>
+            <option value="ProductName">Название</option>
+        </select>
+        <button name="btnDesc" type="button" class="btn-dark">↑</button>
+        <input name="isDesc" type="checkbox" value="true" hidden/>
+    </div>
+    <div class="displayBlock">
+        <label for="displaySorted" class="displayLbl">
+            Поиск:
+        </label>
+        <input name="searchValue" type="search" id="displayFound" placeholder="Поиск" />
+    </div>
+    <div class="displayBlock">
+        <label for="filterType" class="displayLbl">
+            Фильтр:
+        </label>
+        <select name="commonFilterType" id="filterType">
+            <option value="None">Нет</option>
+            <option value="Brand">Бренд</option>
+            <option value="Price">Цена</option>
+            <option value="CategoryName">Категория</option>
+            <option value="Country">Страна</option>
+        </select>
+    </div>
+    <div class="displayBlock">
+        <label for="filterValue" class="displayLbl">
+            Значение фильтра:
+        </label>
+        <select name="commonFilterValue" id="filterValue"></select>
+    </div>
+    <button class="btn-dark">Применить</button>
+</form>
 <div class="row botMargin">
-    @foreach (var item in Model)
+    @foreach (var item in Model.ProductViews)
     {
         <div class="col-sm-3">
             <div class="card item" id="@item.Id">
@@ -30,18 +70,27 @@
     p{
         margin-bottom: 2px;
     }
+    #displayForm{
+        margin: 12px;
+    }
+    .displayBlock{
+        display: inline-block;
+    }
+    .displayLbl{
+        display: block;
+    }
     .buyBlock{
         padding: 12px;
         display: flex;
         justify-content: center;
     }
     .item{
-        height: 430px;
+        height: 400px;
         padding: 30px;
         margin: 10px;
     }
     .imgBlock{
-        height: 200px;
+        height: 150px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -75,4 +124,75 @@
         );
         x.style.cursor = "pointer";
     });
+
+    var form = document.querySelector("#displayForm");
+    var btnDesc = form.btnDesc;
+    var sortBy = form.sortBy;
+    var isDesc = form.isDesc;
+    var commonFilterValue = form.commonFilterValue;
+    var commonFilterType = form.commonFilterType;
+
+    sortBy.addEventListener("change", x => {
+        if (sortBy.selectedIndex == 0) {
+            btnDesc.style.visibility = "hidden";
+        } else {
+            btnDesc.style.visibility = "visible";
+        }
+    });
+    btnDesc.addEventListener("click", x => {
+        if (btnDesc.innerText === "↑") {
+            btnDesc.innerText = "↓";
+            isDesc.checked = true;
+        }
+        else {
+            btnDesc.innerText = "↑";
+            isDesc.checked = false;
+        }
+    });
+    commonFilterType.addEventListener("change", x => {
+        while (commonFilterValue.options.length > 0) {
+            commonFilterValue.options.remove(0);
+        }
+        switch (commonFilterType.value){
+            case "Brand":
+            case "CategoryName":
+            case "Country":
+                fetch("@Url.Action("GetCommonFilterValuesList", "Home")" + "?type=" + commonFilterType.value,
+                {
+                    method: "POST"
+                })
+                .then(result => result.json())
+                .then(json =>
+                {
+                    json.forEach(x => {
+                        commonFilterValue.options.add( new Option(x.text, x.text) );
+                    }) 
+                })
+                .catch(error => console.log(error));
+                break;
+        }
+    });
+
+    if (@((Model.DisplayOptions.IsDesc).CompareTo(false))){
+        btnDesc.click();
+    }
+    if (@((Model.DisplayOptions.SortBy.Equals(SortBy.None)).CompareTo(false))){
+        btnDesc.style.visibility = "hidden";
+    }
+    sortBy.value = "@Model.DisplayOptions.SortBy";
+    form.searchValue.value = "@Model.DisplayOptions.SearchValue";
+    commonFilterType.value = "@Model.DisplayOptions.CommonFilterType";
+    commonFilterType.dispatchEvent(new Event("change"));
+    //commonFilterValue.value = "@Model.DisplayOptions.CommonFilterValue";
+    setOption(commonFilterValue, "@Model.DisplayOptions.CommonFilterValue");
+    function setOption(selectElement, value) {
+        var options = selectElement.options;
+        for (var i = 0, optionsLength = options.length; i < optionsLength; i++) {
+            if (options[i].value == value) {
+                selectElement.selectedIndex = i;
+                return true;
+            }
+        }
+        return false;
+    }
 </script>
