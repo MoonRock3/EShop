@@ -48,11 +48,11 @@ namespace TimirzinEShop.Models
                 default:
                     break;
             }
-            string attrName = DisplayOptions.CategoryFilterType;
-            if (!string.IsNullOrWhiteSpace(attrName) && !attrName.Equals("Нет"))
-            {
-                string dataType = Rep.GetAttributeDataType(attrName),
+            string attrName = DisplayOptions.CategoryFilterType,
                     categoryFilterValueSelect = DisplayOptions.CategoryFilterValueSelect;
+            if (!string.IsNullOrWhiteSpace(attrName) && !attrName.Equals("Нет") && !categoryFilterValueSelect.Equals("Нет"))
+            {
+                string dataType = Rep.GetAttributeDataType(attrName);
                 double categoryFilterValueMin = DisplayOptions.CategoryFilterValueMin,
                     categoryFilterValueMax = DisplayOptions.CategoryFilterValueMax;
                 productViews = Rep.FilterByCategoryAttribute(productViews, dataType, commonFilterValue,
