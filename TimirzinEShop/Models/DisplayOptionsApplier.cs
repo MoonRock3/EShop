@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TimirzinEShop.Controllers;
 using TimirzinEShop.DB_Context;
+using Rep = TimirzinEShop.Models.ProductRepository;
 
 namespace TimirzinEShop.Models
 {
@@ -21,33 +22,6 @@ namespace TimirzinEShop.Models
 
         public void ApplyToList(ref List<ProductView> productViews)
         {
-            var sortBy = DisplayOptions.SortBy;
-            var isDesc = DisplayOptions.IsDesc;
-            switch (sortBy)
-            {
-                case SortBy.Price:
-                    if (!isDesc)
-                    {
-                        productViews = productViews.OrderBy(x => x.Price).ToList();
-                    }
-                    else
-                    {
-                        productViews = productViews.OrderByDescending(x => x.Price).ToList();
-                    }
-                    break;
-                case SortBy.ProductName:
-                    if (!isDesc)
-                    {
-                        productViews = productViews.OrderBy(x => x.GetProductName()).ToList();
-                    }
-                    else
-                    {
-                        productViews = productViews.OrderByDescending(x => x.GetProductName()).ToList();
-                    }
-                    break;
-                default:
-                    break;
-            }
             var search = DisplayOptions.SearchValue;
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -66,9 +40,58 @@ namespace TimirzinEShop.Models
                 case FilterType.Country:
                     productViews = productViews.Where(x => x.Country.Equals(commonFilterValue)).ToList();
                     break;
+                case FilterType.Price:
+                    double cmnFltrValMin = DisplayOptions.CommonFilterValueMin,
+                           cmnFltrValMax = DisplayOptions.CommonFilterValueMax;
+                    productViews = productViews.Where(x => x.Price >= cmnFltrValMin && x.Price <= cmnFltrValMax).ToList();
+                    break;
                 default:
                     break;
             }
+            string attrName = DisplayOptions.CategoryFilterType;
+            if (!string.IsNullOrWhiteSpace(attrName) && !attrName.Equals("Нет"))
+            {
+                string dataType = Rep.GetAttributeDataType(attrName),
+                    categoryFilterValueSelect = DisplayOptions.CategoryFilterValueSelect;
+                double categoryFilterValueMin = DisplayOptions.CategoryFilterValueMin,
+                    categoryFilterValueMax = DisplayOptions.CategoryFilterValueMax;
+                productViews = Rep.FilterByCategoryAttribute(productViews, dataType, commonFilterValue,
+                    attrName, categoryFilterValueSelect, categoryFilterValueMin, categoryFilterValueMax);
+            }
+            productViews = Sort(productViews);
+        }
+
+        private List<ProductView> Sort(List<ProductView> productViews)
+        {
+            var sortBy = DisplayOptions.SortBy;
+            var isDesc = DisplayOptions.IsDesc;
+            switch (sortBy)
+            {
+                case SortBy.Price:
+                    if (!isDesc)
+                    {
+                        productViews = productViews.OrderBy(x => x.Price)?.ToList();
+                    }
+                    else
+                    {
+                        productViews = productViews.OrderByDescending(x => x.Price)?.ToList();
+                    }
+                    break;
+                case SortBy.ProductName:
+                    if (!isDesc)
+                    {
+                        productViews = productViews.OrderBy(x => x.GetProductName())?.ToList();
+                    }
+                    else
+                    {
+                        productViews = productViews.OrderByDescending(x => x.GetProductName())?.ToList();
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            return productViews;
         }
     }
 }

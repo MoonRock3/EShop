@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+
 <form action="@Url.Action("Index", "Home")" method="post" id="displayForm">
     <div class="displayBlock">
         <label for="displaySorted" class="displayLbl">
@@ -15,13 +16,13 @@
             <option value="ProductName">Название</option>
         </select>
         <button name="btnDesc" type="button" class="btn-dark">↑</button>
-        <input name="isDesc" type="checkbox" value="true" hidden/>
+        <input name="isDesc" type="checkbox" value="true" hidden />
     </div>
     <div class="displayBlock">
         <label for="displaySorted" class="displayLbl">
             Поиск:
         </label>
-        <input name="searchValue" type="search" id="displayFound" placeholder="Поиск" />
+        <input name="searchValue" type="search" id="displayFound" placeholder="Поиск" value="@Model.DisplayOptions.SearchValue" />
     </div>
     <div class="displayBlock">
         <label for="filterType" class="displayLbl">
@@ -35,18 +36,59 @@
             <option value="Country">Страна</option>
         </select>
     </div>
-    <div class="displayBlock">
-        <label for="filterValue" class="displayLbl">
+    <div class="displayBlock" id="commonFilterValueBox">
+        <label for="commonFilterValue" class="displayLbl">
             Значение фильтра:
         </label>
-        <select name="commonFilterValue" id="filterValue"></select>
+        <select name="commonFilterValue" id="commonFilterValueId"></select>
+    </div>
+    <div id="commonFilterValueRange" class="displayBlock">
+        <div class="displayBlock">
+            <label for="commonFilterMinValue" class="displayLbl">
+                Нижняя граница:
+            </label>
+            <input name="commonFilterValueMin" type="number" id="commonFilterMinValue" value="0" />
+        </div>
+        <div class="displayBlock">
+            <label for="commonFilterMaxValue" class="displayLbl">
+                Верхняя граница:
+            </label>
+            <input name="commonFilterValueMax" type="number" id="commonFilterMaxValue" value="0" />
+        </div>
+    </div>
+
+    <div class="displayBlock" id="categoryFilterTypeBox">
+        <label for="categoryFilterType" class="displayLbl">
+            Атрибут категории:
+        </label>
+        <select name="categoryFilterType" id="categoryFilterTypeId"></select>
+    </div>
+    <div class="displayBlock" id="categoryFilterValueBox">
+        <label class="displayLbl">
+            Значение атрибута:
+        </label>
+        <select name="categoryFilterValueSelect"></select>
+    </div>
+    <div id="categoryFilterValueRange" class="displayBlock">
+        <div class="displayBlock">
+            <label for="categoryFilterMinValue" class="displayLbl">
+                Нижняя граница:
+            </label>
+            <input name="categoryFilterValueMin" type="number" id="categoryFilterMinValue" value="0" />
+        </div>
+        <div class="displayBlock">
+            <label for="categoryFilterMaxValue" class="displayLbl">
+                Верхняя граница:
+            </label>
+            <input name="categoryFilterValueMax" type="number" id="categoryFilterMaxValue" value="0" />
+        </div>
     </div>
     <button class="btn-dark">Применить</button>
 </form>
 <div class="row botMargin">
     @foreach (var item in Model.ProductViews)
     {
-        <div class="col-sm-3">
+        <div class="col-sm-4">
             <div class="card item" id="@item.Id">
                 <div class="imgBlock">
                     <img class="cardImg" src="@item.Image">
@@ -65,45 +107,66 @@
             </div>
         </div>
     }
+    @if (Model.ProductViews.Count == 0)
+    {
+        <h2 margin="100px" width="100%" class="text-center">Совпадений не найдено</h2>
+    }
 </div>
 <style>
-    p{
+    p {
         margin-bottom: 2px;
     }
-    #displayForm{
-        margin: 12px;
+    select, input[type="search"], input[type="number"]{
+        height: 30px;
+        width: 200px;
     }
-    .displayBlock{
+    label{
+        margin: 10px 0px;
+    }
+    #displayForm {
+        margin: 0px 12px;
+        padding: 10px;
+    }
+
+    .displayBlock {
         display: inline-block;
+        margin-right: 10px;
     }
-    .displayLbl{
+
+    .displayLbl {
         display: block;
     }
-    .buyBlock{
+
+    .buyBlock {
         padding: 12px;
         display: flex;
         justify-content: center;
     }
-    .item{
+
+    .item {
         height: 400px;
         padding: 30px;
         margin: 10px;
     }
-    .imgBlock{
+
+    .imgBlock {
         height: 150px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 20px;
     }
-    .cardImg{
+
+    .cardImg {
         max-height: 175px;
         max-width: 100%;
     }
-    .zeroPad{
+
+    .zeroPad {
         padding: 0px;
     }
-    .botMargin{
+
+    .botMargin {
         margin-bottom: 50px;
     }
 </style>
@@ -131,12 +194,19 @@
     var isDesc = form.isDesc;
     var commonFilterValue = form.commonFilterValue;
     var commonFilterType = form.commonFilterType;
+    var commonFilterValueRange = document.querySelector("#commonFilterValueRange");
+    var commonFilterValueBox = document.querySelector("#commonFilterValueBox");
+    var categoryFilterType = form.categoryFilterType;
+    var categoryFilterTypeBox = document.querySelector("#categoryFilterTypeBox");
+    var categoryFilterValueBox = document.querySelector("#categoryFilterValueBox");
+    var categoryFilterValueSelect = form.categoryFilterValueSelect;
+    var categoryFilterValueRange = document.querySelector("#categoryFilterValueRange");
 
     sortBy.addEventListener("change", x => {
         if (sortBy.selectedIndex == 0) {
-            btnDesc.style.visibility = "hidden";
+            switchVisibility(btnDesc, false);
         } else {
-            btnDesc.style.visibility = "visible";
+            switchVisibility(btnDesc);
         }
     });
     btnDesc.addEventListener("click", x => {
@@ -149,50 +219,183 @@
             isDesc.checked = false;
         }
     });
-    commonFilterType.addEventListener("change", x => {
+    commonFilterType.addEventListener("change", x =>
+    {
         while (commonFilterValue.options.length > 0) {
             commonFilterValue.options.remove(0);
         }
-        switch (commonFilterType.value){
-            case "Brand":
+        form.commonFilterValueMin.value = 0;
+        form.commonFilterValueMax.value = 0;
+        form.categoryFilterValueMin.value = 0;
+        form.categoryFilterValueMax.value = 0;
+        while (categoryFilterType.options.length > 0) {
+            categoryFilterType.options.remove(0);
+        }
+        switch (commonFilterType.value) {
+            case "None":
+                switchVisibility(commonFilterValueRange, false);
+                switchVisibility(commonFilterValueBox, false);
+                switchVisibility(categoryFilterTypeBox, false);
+                break;
             case "CategoryName":
+                setCommonFilterTypeList();
+                switchVisibility(categoryFilterTypeBox);
+                switchVisibility(commonFilterValueRange, false);
+                switchVisibility(commonFilterValueBox);
+                break;
+            case "Brand":
             case "Country":
-                fetch("@Url.Action("GetCommonFilterValuesList", "Home")" + "?type=" + commonFilterType.value,
-                {
-                    method: "POST"
-                })
-                .then(result => result.json())
-                .then(json =>
-                {
-                    json.forEach(x => {
-                        commonFilterValue.options.add( new Option(x.text, x.text) );
-                    }) 
-                })
-                .catch(error => console.log(error));
+                setCommonFilterTypeList();
+                switchVisibility(commonFilterValueBox);
+                switchVisibility(commonFilterValueRange, false);
+                switchVisibility(categoryFilterTypeBox, false);
+                break;
+            case "Price":
+                switchVisibility(commonFilterValueRange);
+                switchVisibility(commonFilterValueBox, false);
+                switchVisibility(categoryFilterTypeBox, false);
+                switchVisibility(categoryFilterValueBox, false);
+                switchVisibility(categoryFilterValueRange, false);
+                break;
+            default:
                 break;
         }
+    });
+
+    commonFilterValue.addEventListener("change", x =>
+    {
+        switchVisibility(categoryFilterValueBox, false);
+        switchVisibility(categoryFilterValueRange, false);
+        if (commonFilterType.value === "CategoryName") {
+            while (categoryFilterType.options.length > 0) {
+                categoryFilterType.options.remove(0);
+            }
+            setCategoryFilterTypesList();
+        }
+    }
+    );
+
+    categoryFilterType.addEventListener("change", x => {
+        while (categoryFilterValueSelect.options.length > 0)
+        {
+            categoryFilterValueSelect.options.remove(0);
+        }
+        setCategoryFilterValuesList()
     });
 
     if (@((Model.DisplayOptions.IsDesc).CompareTo(false))){
         btnDesc.click();
     }
     if (@((Model.DisplayOptions.SortBy.Equals(SortBy.None)).CompareTo(false))){
-        btnDesc.style.visibility = "hidden";
+        switchVisibility(btnDesc, false);
     }
-    sortBy.value = "@Model.DisplayOptions.SortBy";
-    form.searchValue.value = "@Model.DisplayOptions.SearchValue";
-    commonFilterType.value = "@Model.DisplayOptions.CommonFilterType";
+    sortBy.value = "@Html.Raw(Model.DisplayOptions.SortBy)";
+    commonFilterType.value = "@Html.Raw(Model.DisplayOptions.CommonFilterType)";
+
+    switchVisibility(categoryFilterValueBox, false);
+    switchVisibility(categoryFilterValueRange, false);
+
     commonFilterType.dispatchEvent(new Event("change"));
-    //commonFilterValue.value = "@Model.DisplayOptions.CommonFilterValue";
-    setOption(commonFilterValue, "@Model.DisplayOptions.CommonFilterValue");
-    function setOption(selectElement, value) {
-        var options = selectElement.options;
-        for (var i = 0, optionsLength = options.length; i < optionsLength; i++) {
-            if (options[i].value == value) {
-                selectElement.selectedIndex = i;
-                return true;
-            }
+    form.commonFilterValueMin.value = "@Html.Raw(Model.DisplayOptions.CommonFilterValueMin)";
+    form.commonFilterValueMax.value = "@Html.Raw(Model.DisplayOptions.CommonFilterValueMax)";
+    
+    form.categoryFilterValueMin.value = "@Html.Raw(Model.DisplayOptions.CategoryFilterValueMin)";
+    form.categoryFilterValueMax.value = "@Html.Raw(Model.DisplayOptions.CategoryFilterValueMax)";
+    function switchVisibility(obj, isVisible = true) {
+        if (isVisible)
+        {
+            obj.hidden = false;
+        } else {
+            obj.hidden = true;
         }
-        return false;
+    }
+    function setCommonFilterTypeList()
+    {
+        fetch("@Url.Action("GetCommonFilterValuesList", "Home")" + "?type=" + commonFilterType.value,
+            {
+                method: "POST"
+            })
+            .then(result => result.json())
+            .then(json =>
+            {
+                json.forEach(x =>
+                {
+                    commonFilterValue.options.add(new Option(x.text, x.text));
+                });
+                for (var i = 0; i < commonFilterValue.options.length; i++)
+                {
+                    if (commonFilterValue.options[i].value === "@Html.Raw(Model.DisplayOptions.CommonFilterValue)")
+                    {
+                        commonFilterValue.selectedIndex = i;
+                        break;
+                    }
+                }
+                commonFilterValue.dispatchEvent(new Event("change"));
+            }).catch(error => console.log(error));
+    }
+    function setCategoryFilterTypesList(){
+            fetch(`@Url.Action("GetCategoryFilterTypesList", "Home")?category=${commonFilterValue.value}`,
+                {
+                    method: "POST"
+                }
+            ).then(result => result.json())
+                .then(json =>
+                {
+                    categoryFilterType.options.add(new Option("Нет", "Нет"));
+
+                    json.forEach(x =>
+                    {
+                        categoryFilterType.options.add(new Option(x.text, x.text));
+                    });
+                    for (var i = 0; i < categoryFilterType.options.length; i++)
+                    {
+                        if (categoryFilterType.options[i].value === "@Html.Raw(Model.DisplayOptions.CategoryFilterType)")
+                        {
+                            categoryFilterType.selectedIndex = i;
+                            break;
+                        }
+                    }
+                    categoryFilterType.dispatchEvent(new Event("change"));
+                }).catch(error => console.log(error));
+    }
+    function setCategoryFilterValuesList()
+    {
+        if (categoryFilterType.value === "Нет" || categoryFilterType.hidden || commonFilterType.value === "Нет")
+        {
+            switchVisibility(categoryFilterValueBox, false);
+            switchVisibility(categoryFilterValueRange, false);
+            return;
+        }
+        fetch(`@Url.Action("GetCategoryFilterValuesList", "Home")?category=${commonFilterValue.value}&&filterType=${categoryFilterType.value}`,
+            {
+                method: "POST"
+            })
+            .then(result => result.json())
+            .then(json =>
+            {
+                if (json[0].value === "notStringOrBool")
+                {
+                    switchVisibility(categoryFilterValueRange);
+                    switchVisibility(categoryFilterValueBox, false);
+                }
+                else
+                {
+                    switchVisibility(categoryFilterValueRange, false);
+                    switchVisibility(categoryFilterValueBox);
+                    categoryFilterValueSelect.options.add(new Option("Нет", "Нет"));
+                    json.forEach(x =>
+                    {
+                        categoryFilterValueSelect.options.add(new Option(x.text, x.text));
+                    });
+                    for (var i = 0; i < categoryFilterValueSelect.options.length; i++)
+                    {
+                        if (categoryFilterValueSelect.options[i].value === "@Html.Raw(Model.DisplayOptions.CategoryFilterValueSelect)")
+                        {
+                            categoryFilterValueSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }).catch(error => console.log(error));
     }
 </script>

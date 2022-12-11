@@ -11,7 +11,6 @@ namespace TimirzinEShop.Models
         Brand,
         Price,
         CategoryName,
-        Country,
-        Model
+        Country
     }
 }

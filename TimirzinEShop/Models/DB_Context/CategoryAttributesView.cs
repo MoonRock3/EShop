@@ -11,5 +11,6 @@ namespace TimirzinEShop.DB_Context
         public string CategoryName { get; set; }
         public string AttributeName { get; set; }
         public string Units { get; set; }
+        public string DataType { get; set; }
     }
 }

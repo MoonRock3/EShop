@@ -21,6 +21,18 @@ namespace TimirzinEShop.Controllers
             _logger = logger;
         }
         [HttpPost]
+        public JsonResult GetCategoryFilterValuesList(string category, string filterType)
+        {
+            List<HtmlOption> options = Rep.GetCategoryFilterValuesList(category, filterType);
+            return Json(options ?? new List<HtmlOption>());
+        }
+        [HttpPost]
+        public JsonResult GetCategoryFilterTypesList(string category)
+        {
+            List<HtmlOption> options = Rep.GetCategoryFilterTypesList(category);
+            return Json(options ?? new List<HtmlOption>());
+        }
+        [HttpPost]
         public JsonResult GetCommonFilterValuesList(FilterType type)
         {
             List<HtmlOption> options = null;
@@ -54,7 +66,6 @@ namespace TimirzinEShop.Controllers
             IndexParams @params = new IndexParams(productViews, displayOptions);
             return View(@params);
         }
-
         public IActionResult Privacy()
         {
             return View();
