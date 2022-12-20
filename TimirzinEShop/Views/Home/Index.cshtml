@@ -45,13 +45,13 @@
     <div id="commonFilterValueRange" class="displayBlock">
         <div class="displayBlock">
             <label for="commonFilterMinValue" class="displayLbl">
-                Нижняя граница:
+                Нижняя граница значения:
             </label>
             <input name="commonFilterValueMin" type="number" id="commonFilterMinValue" value="0" />
         </div>
         <div class="displayBlock">
             <label for="commonFilterMaxValue" class="displayLbl">
-                Верхняя граница:
+                Верхняя граница значения:
             </label>
             <input name="commonFilterValueMax" type="number" id="commonFilterMaxValue" value="0" />
         </div>
@@ -72,13 +72,13 @@
     <div id="categoryFilterValueRange" class="displayBlock">
         <div class="displayBlock">
             <label for="categoryFilterMinValue" class="displayLbl">
-                Нижняя граница:
+                Нижняя граница значения:
             </label>
             <input name="categoryFilterValueMin" type="number" id="categoryFilterMinValue" value="0" />
         </div>
         <div class="displayBlock">
             <label for="categoryFilterMaxValue" class="displayLbl">
-                Верхняя граница:
+                Верхняя граница значения:
             </label>
             <input name="categoryFilterValueMax" type="number" id="categoryFilterMaxValue" value="0" />
         </div>
@@ -229,6 +229,8 @@
     });
     commonFilterType.addEventListener("change", x =>
     {
+        switchVisibility(categoryFilterValueBox, false);
+        switchVisibility(categoryFilterValueRange, false);
         while (commonFilterValue.options.length > 0) {
             commonFilterValue.options.remove(0);
         }
@@ -349,7 +351,7 @@
             ).then(result => result.json())
                 .then(json =>
                 {
-                    categoryFilterType.options.add(new Option("Нет", "Нет"));
+                    categoryFilterType.options.add(new Option("Не выбрано", "Не выбрано"));
 
                     json.forEach(x =>
                     {
@@ -368,7 +370,7 @@
     }
     function setCategoryFilterValuesList()
     {
-        if (categoryFilterType.value === "Нет" || categoryFilterType.hidden || commonFilterType.value === "Нет")
+        if (categoryFilterType.value === "Не выбрано" || categoryFilterType.hidden || commonFilterType.value === "Не выбрано")
         {
             switchVisibility(categoryFilterValueBox, false);
             switchVisibility(categoryFilterValueRange, false);
@@ -390,7 +392,7 @@
                 {
                     switchVisibility(categoryFilterValueRange, false);
                     switchVisibility(categoryFilterValueBox);
-                    categoryFilterValueSelect.options.add(new Option("Нет", "Нет"));
+                    categoryFilterValueSelect.options.add(new Option("Не выбрано", "Не выбрано"));
                     json.forEach(x =>
                     {
                         categoryFilterValueSelect.options.add(new Option(x.text, x.text));

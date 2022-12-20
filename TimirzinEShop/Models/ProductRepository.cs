@@ -45,6 +45,7 @@ namespace TimirzinEShop.Models
                         case "bool":
                             atributes = new List<string>();
                             atributes.Add("Есть");
+                            atributes.Add("Нет");
                             break;
                         default:
                             atributes = new List<string>();
@@ -218,7 +219,7 @@ namespace TimirzinEShop.Models
                     List<string> propValsList = type switch
                     {
                         FilterType.Brand => context.ProductViews.Select(x => x.Brand).ToList(),
-                        FilterType.CategoryName => context.ProductViews.Select(x => x.CategoryName).ToList(),
+                        FilterType.CategoryName => context.Categories.Select(x => x.Name).ToList(),
                         FilterType.Country => context.ProductViews.Select(x => x.Country).ToList(),
                         _ => new List<string>(),
                     };
