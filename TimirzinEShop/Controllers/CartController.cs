@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using TimirzinEShop.Areas.Identity.Data;
 using TimirzinEShop.Models;
 using Rep = TimirzinEShop.Models.ProductRepository;
 
@@ -37,7 +41,9 @@ namespace TimirzinEShop.Controllers
         public IActionResult Order()
         {
             Cart cart = HttpContext.Session.Get<Cart>("Cart") ?? new Cart();
-            return View(cart);
+            EShopUser user = Rep.FindUserByName(User.Identity.Name);
+            OrderModel model = new OrderModel(cart, user);
+            return View(model);
         }
         public IActionResult Delete(int id)
         {

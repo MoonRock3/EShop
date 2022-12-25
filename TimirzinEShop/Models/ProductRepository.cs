@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TimirzinEShop.Areas.Identity.Data;
 using TimirzinEShop.DB_Context;
 
 namespace TimirzinEShop.Models
@@ -72,6 +73,23 @@ namespace TimirzinEShop.Models
             }
             return options ?? new List<HtmlOption>();
         }
+
+        public static EShopUser FindUserByName(string name)
+        {
+            try
+            {
+                using (EShopUserContext context = new EShopUserContext(new Microsoft.EntityFrameworkCore.DbContextOptions<EShopUserContext>()))
+                {
+                    return context.Users.FirstOrDefault(x => x.UserName.Equals(name));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
         public static string GetAttributeDataType(string attrName)
         {
             try
